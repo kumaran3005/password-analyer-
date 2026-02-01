@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>CyberGuard | Password Strength Tool</title>
+</head>
+<body class="bg-slate-900 text-white flex items-center justify-center min-h-screen">
+
+    <div class="bg-slate-800 p-8 rounded-2xl shadow-2xl w-full max-w-md border border-slate-700">
+        <h2 class="text-2xl font-bold mb-2">Password Analyzer</h2>
+        <p class="text-slate-400 text-sm mb-6">Cybersecurity Portfolio Project #1</p>
+
+        <div class="relative mb-4">
+            <input type="password" id="passwordInput" 
+                class="w-full bg-slate-900 border border-slate-600 rounded-lg p-3 focus:outline-none focus:border-blue-500 transition"
+                placeholder="Enter password to test...">
+        </div>
+
+        <div class="w-full bg-slate-700 h-2 rounded-full mb-2">
+            <div id="strengthBar" class="h-full w-0 rounded-full transition-all duration-500 bg-red-500"></div>
+        </div>
+
+        <div class="flex justify-between items-center">
+            <span id="strengthText" class="text-sm font-medium text-slate-400">Strength: None</span>
+            <span id="entropyText" class="text-xs text-slate-500">0 bits</span>
+        </div>
+
+        <ul class="mt-6 space-y-2 text-xs text-slate-400">
+            <li id="rule-length">❌ Minimum 8 characters</li>
+            <li id="rule-upper">❌ Includes Uppercase</li>
+            <li id="rule-special">❌ Includes Special Character</li>
+        </ul>
+    </div>
+
+    <script>
+        const input = document.getElementById('passwordInput');
+        const bar = document.getElementById('strengthBar');
+        const text = document.getElementById('strengthText');
+        const entropy = document.getElementById('entropyText');
+
+        input.addEventListener('input', () => {
+            const val = input.value;
+            let score = 0;
+
+            // 1. Check Length
+            if (val.length >= 8) {
+                score++;
+                document.getElementById('rule-length').innerText = "✅ Minimum 8 characters";
+            } else {
+                document.getElementById('rule-length').innerText = "❌ Minimum 8 characters";
+            }
+
+            // 2. Check Upper & Lower Case
+            if (/[A-Z]/.test(val) && /[a-z]/.test(val)) {
+                score++;
+                document.getElementById('rule-upper').innerText = "✅ Includes Uppercase";
+            } else {
+                document.getElementById('rule-upper').innerText = "❌ Includes Uppercase";
+            }
+
+            // 3. Check Special Characters
+            if (/[^A-Za-z0-9]/.test(val)) {
+                score++;
+                document.getElementById('rule-special').innerText = "✅ Includes Special Character";
+            } else {
+                document.getElementById('rule-special').innerText = "❌ Includes Special Character";
+            }
+
+            // 4. Bonus for extra length
+            if (val.length > 12) score++;
+
+            // Update UI Colors and Width
+            const colors = ['#ef4444', '#f97316', '#3b82f6', '#22c55e'];
+            const labels = ['Weak', 'Fair', 'Good', 'Secure'];
+
+            if (val.length === 0) {
+                bar.style.width = '0%';
+                text.innerText = "Strength: None";
+                entropy.innerText = "0 bits";
+            } else {
+                bar.style.width = (score / 4 * 100) + '%';
+                bar.style.backgroundColor = colors[score - 1] || colors[0];
+                text.innerText = "Strength: " + (labels[score - 1] || labels[0]);
+                // Simple entropy display
+                entropy.innerText = (val.length * 4) + " bits of entropy";
+            }
+        });
+    </script>
+</body>
+</html>
